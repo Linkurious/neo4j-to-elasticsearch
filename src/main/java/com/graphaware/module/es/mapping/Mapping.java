@@ -104,8 +104,8 @@ public abstract class Mapping {
      * @param node A Neo4j node
      * @return a map of fields to store in ElasticSearch
      */
-    protected Map<String, String> map(NodeRepresentation node) {
-        Map<String, String> source = new HashMap<>();
+    protected Map<String, Object> map(NodeRepresentation node) {
+        Map<String, Object> source = new HashMap<>();
         for (String key : node.getProperties().keySet()) {
               source.put(key, String.valueOf(node.getProperties().get(key)));
         }
@@ -118,8 +118,8 @@ public abstract class Mapping {
      * @param relationship A Neo4j relationship
      * @return a map of fields to store in ElasticSearch
      */
-    protected Map<String, String> map(RelationshipRepresentation relationship) {
-        Map<String, String> source = new HashMap<>();
+    protected Map<String, Object> map(RelationshipRepresentation relationship) {
+        Map<String, Object> source = new HashMap<>();
         for (String key : relationship.getProperties().keySet()) {
             source.put(key, String.valueOf(relationship.getProperties().get(key)));
         }
@@ -146,7 +146,7 @@ public abstract class Mapping {
         });
     }
 
-    private void createIndexAndMapping(JestClient client, String index) throws Exception {
+    protected void createIndexAndMapping(JestClient client, String index) throws Exception {
         if (client.execute(new IndicesExists.Builder(index).build()).isSucceeded()) {
             LOG.info("Index " + index + " already exists in ElasticSearch.");
             return;
@@ -159,7 +159,7 @@ public abstract class Mapping {
         if (execute.isSucceeded()) {
             LOG.info("Created ElasticSearch index.");
         } else {
-            LOG.error("Failed to create ElasticSearch index. Details: " + execute.getErrorMessage());
+            throw new Exception("Failed to create ElasticSearch index. Details: " + execute.getErrorMessage());
         }
     }
 

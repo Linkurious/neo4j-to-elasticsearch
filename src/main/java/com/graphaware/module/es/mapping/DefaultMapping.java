@@ -42,8 +42,8 @@ import java.util.ArrayList;
 public class DefaultMapping extends Mapping {
     private static final Log LOG = LoggerFactory.getLogger(DefaultMapping.class);
 
-    public DefaultMapping(String index, String keyProperty) {
-        super(index, keyProperty);
+    public DefaultMapping(String indexPrefix, String keyProperty) {
+        super(indexPrefix, keyProperty);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class DefaultMapping extends Mapping {
 
     private List<BulkableAction<? extends JestResult>> createOrUpdateNode(NodeRepresentation node) {
         String id = getKey(node);
-        Map<String, String> source = map(node);
+        Map<String, Object> source = map(node);
         List<BulkableAction<? extends JestResult>> actions = new ArrayList<>();
 
         for (String label : node.getLabels()) {
