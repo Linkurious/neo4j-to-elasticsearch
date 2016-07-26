@@ -40,10 +40,6 @@ import java.util.Map;
  * Relationships are not indexed.
  */
 public class DefaultMapping extends BaseMapping implements Mapping {
-
-    private static final String DEFAULT_INDEX = "neo4j-index";
-    private static final String DEFAULT_KEY_PROPERTY = "uuid";
-
     private static final Log LOG = LoggerFactory.getLogger(DefaultMapping.class);
 
     public DefaultMapping() {
@@ -78,7 +74,7 @@ public class DefaultMapping extends BaseMapping implements Mapping {
 
     protected List<BulkableAction<? extends JestResult>> createOrUpdateNode(NodeRepresentation node) {
         String id = getKey(node);
-        Map<String, Object> source = map(node);
+        Map<String, String> source = map(node);
         List<BulkableAction<? extends JestResult>> actions = new ArrayList<>();
 
         for (String label : node.getLabels()) {
@@ -114,21 +110,5 @@ public class DefaultMapping extends BaseMapping implements Mapping {
     @Override
     public <T extends PropertyContainer> String getIndexFor(Class<T> searchedType) {
         return getIndexPrefix() + (searchedType.equals(Node.class) ? "-node" : "-relationship");
-    }
-
-    @Override
-    public void configure(Map<String, String> config) {
-        index = config.getOrDefault("index", DEFAULT_INDEX).trim();
-        keyProperty = config.getOrDefault("keyProperty", DEFAULT_KEY_PROPERTY).trim();
-    }
-
-    @Override
-    protected String getIndexPrefix() {
-        return null != index ? index : DEFAULT_INDEX;
-    }
-
-    @Override
-    public String getKeyProperty() {
-        return null != keyProperty ? keyProperty : DEFAULT_KEY_PROPERTY;
     }
 }

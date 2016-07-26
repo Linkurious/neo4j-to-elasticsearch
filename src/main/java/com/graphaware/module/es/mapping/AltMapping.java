@@ -17,11 +17,9 @@ import java.util.*;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 
-public class AltMapping extends Mapping {
+public class AltMapping extends BaseMapping {
 
-    public AltMapping(String indexPrefix, String keyProperty) {
-        super(indexPrefix, keyProperty);
-    }
+    public AltMapping() { }
 
     @Override
     protected List<BulkableAction<? extends JestResult>> deleteNode(NodeRepresentation node) {
@@ -67,15 +65,16 @@ public class AltMapping extends Mapping {
     }
 
     @Override
-    protected Map<String, Object> map(NodeRepresentation node) {
-        Map<String, Object> m = super.map(node);
-        m.put("__type", node.getLabels());
+    protected Map<String, String> map(NodeRepresentation node) {
+        Map<String, String> m = super.map(node);
+        // todo: back merge changes from 23-dont-index-uuid before uncommenting
+        // m.put("__type", Arrays.asList(node.getLabels()));
         return m;
     }
 
     @Override
-    protected Map<String, Object> map(RelationshipRepresentation relationship) {
-        Map<String, Object> m = super.map(relationship);
+    protected Map<String, String> map(RelationshipRepresentation relationship) {
+        Map<String, String> m = super.map(relationship);
         m.put("__type", relationship.getType());
         return m;
     }

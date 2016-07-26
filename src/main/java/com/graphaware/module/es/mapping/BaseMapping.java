@@ -41,12 +41,34 @@ public abstract class BaseMapping implements Mapping {
 
     private static final Log LOG = LoggerFactory.getLogger(BaseMapping.class);
 
+    private static final String DEFAULT_INDEX = "neo4j-index";
+    private static final String DEFAULT_KEY_PROPERTY = "uuid";
+
     protected String keyProperty;
     protected String index;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
     public BaseMapping() {
+    }
+
+    @Override
+    public void configure(Map<String, String> config) {
+        index = config.getOrDefault("index", DEFAULT_INDEX).trim();
+        keyProperty = config.getOrDefault("keyProperty", DEFAULT_KEY_PROPERTY).trim();
+    }
+
+    /**
+     * @return name of the ElasticSearch index name prefix to use for indexing.
+     */
+    protected String getIndexPrefix() {
+        return null != index ? index : DEFAULT_INDEX;
+    }
+
+
+    @Override
+    public String getKeyProperty() {
+        return null != keyProperty ? keyProperty : DEFAULT_KEY_PROPERTY;
     }
 
     /**
@@ -57,13 +79,6 @@ public abstract class BaseMapping implements Mapping {
      */
     protected final String getKey(PropertyContainerRepresentation propertyContainer) {
         return String.valueOf(propertyContainer.getProperties().get(getKeyProperty()));
-    }
-
-    /**
-     * @return name of the ElasticSearch index name prefix to use for indexing.
-     */
-    protected String getIndexPrefix() {
-        return index;
     }
 
     /**
@@ -156,7 +171,7 @@ public abstract class BaseMapping implements Mapping {
         });
     }
 
-    private void createIndexAndMapping(JestClient client, String index) throws Exception {
+    protected void createIndexAndMapping(JestClient client, String index) throws Exception {
         if (client.execute(new IndicesExists.Builder(index).build()).isSucceeded()) {
             LOG.info("Index " + index + " already exists in ElasticSearch.");
             return;
